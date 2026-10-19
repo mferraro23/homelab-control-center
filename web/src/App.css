@@ -1,0 +1,18 @@
+main {
+  max-width: 40rem;
+  margin: 4rem auto;
+  padding: 0 1rem;
+  font-family: system-ui, sans-serif;
+}
+
+.status {
+  font-size: 1.25rem;
+}
+
+.ok {
+  color: #16a34a;
+}
+
+.error {
+  color: #dc2626;
+}

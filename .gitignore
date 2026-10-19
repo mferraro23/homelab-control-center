@@ -1,0 +1,7 @@
+.kube/
+*.kubeconfig
+.env
+node_modules/
+bin/
+obj/
+dist/

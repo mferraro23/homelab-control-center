@@ -6,4 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="KubernetesClient" Version="21.0.8" />
+  </ItemGroup>
+
 </Project>

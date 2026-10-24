@@ -12,12 +12,13 @@ public class HealthEndpointTests(WebApplicationFactory<Program> factory)
     [Fact]
     public async Task Health_ReturnsOk()
     {
+        var ct = TestContext.Current.CancellationToken;
         var client = factory.CreateClient();
 
-        var response = await client.GetAsync("/api/health");
+        var response = await client.GetAsync("/api/health", ct);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var body = await response.Content.ReadFromJsonAsync<HealthResponse>();
+        var body = await response.Content.ReadFromJsonAsync<HealthResponse>(ct);
         Assert.Equal("OK", body?.Status);
     }
 }

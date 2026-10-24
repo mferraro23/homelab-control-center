@@ -156,6 +156,22 @@ Write the multi-stage Dockerfile, build it for arm64 with `buildx`, and push it 
 - **You'll learn:** images and registries, multi-arch builds, RBAC, and how a pod authenticates to the cluster.
 - **Done when:** `http://dash.lan` shows your nodes, on your phone too.
 
+#### Phase 3 add-on: trusted HTTPS for every .lan app
+
+Right now Traefik only serves `kuma.lan`, `home.lan` and `dash.lan` over plain HTTP, so `https://` on them fails. cert-manager fixes that for every app at once, using your own certificate authority (the same idea as Pi-hole's `tls_ca.crt`).
+
+1. **Install cert-manager** on the cluster with its official manifest or Helm chart. It's a controller that watches for certificate requests and keeps certificates renewed.
+2. **Create your home CA** with three resources: a self-signed `ClusterIssuer`, a `Certificate` with `isCA: true` that it signs (your root CA, stored as a Secret), and a second `ClusterIssuer` named `lan-ca` that issues certificates from that root.
+3. **Request certificates from each Ingress.** Add the annotation `cert-manager.io/cluster-issuer: lan-ca` and a `tls:` block listing the host (for example `dash.lan`) and a secret name. cert-manager issues the certificate into that Secret, and Traefik serves it on port 443.
+4. **Trust the CA once on each device:** export the root CA from its Secret, import it into Windows' Trusted Root Certification Authorities, and install it on your iPhone as a profile, then turn on full trust under Certificate Trust Settings.
+5. **Optional: redirect HTTP to HTTPS** with a Traefik `redirectScheme` Middleware, so typing a bare `kuma.lan` always lands on the padlocked version.
+6. **Roll it out to Kuma and Homepage too** by adding the same annotation and `tls:` block to their Ingresses.
+
+- **You'll learn:** how TLS and certificate authorities work, Kubernetes controllers and custom resources (`ClusterIssuer`, `Certificate`), and Ingress TLS.
+- **Done when:** `https://dash.lan`, `https://kuma.lan` and `https://home.lan` all show a padlock with no warning, on both your PC and your phone.
+
+Keep the CA's private key Secret out of Git; it can sign certificates your devices will trust.
+
 ### Phase 4: More sources and live updates
 
 Add connectors for Pi-hole and Uptime Kuma, then Home Assistant once the Pi 5 is running. Move polling into a `BackgroundService`, push changes over SignalR, and add a light toggle that calls Home Assistant through your API.
